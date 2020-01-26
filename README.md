@@ -58,4 +58,32 @@ can inspect the current state
 terraform state <subcommand>
 ```
 a built in command called terraform state which is used for advanced state management. In cases where a user would need to modify the state file by finding resources in the terraform.tfstate file with terraform state list. This will give us a list of resources as addresses and resource IDs that we can then modify.
+```
+terraform destroy
+```
 
+# Important facts about Terraform
+
+Terraform uses this dependency information to determine the correct order in which to create the different resources.
+
+Explicit dependencies - For example, perhaps an application we will run on our EC2 instance expects to use a specific Amazon S3 bucket, but that dependency is configured inside the application code and thus not visible to Terraform. In that case, we can use depends_on to explicitly declare the dependency:
+```
+# New resource for the S3 bucket our application will use.
+resource "aws_s3_bucket" "example" {
+  # NOTE: S3 bucket names must be unique across _all_ AWS accounts, so
+  # this name must be changed before applying this example to avoid naming
+  # conflicts.
+  bucket = "terraform-getting-started-guide"
+  acl    = "private"
+}
+
+# Change the aws_instance we declared earlier to now include "depends_on"
+resource "aws_instance" "example" {
+  ami           = "ami-2757f631"
+  instance_type = "t2.micro"
+
+  # Tells Terraform that this EC2 instance must be created only after the
+  # S3 bucket has been created.
+  depends_on = [aws_s3_bucket.example]
+}
+```
