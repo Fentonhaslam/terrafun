@@ -1,6 +1,6 @@
 # Terrafun
 
-Building Infrastructure using Terraform.
+Building Infrastructure as code using Terraform.
 
 # What is Terraform
 
